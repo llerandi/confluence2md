@@ -1,5 +1,10 @@
 # Confluence to Markdown
 
+[![CI](https://img.shields.io/github/actions/workflow/status/llerandi/confluence2md/ci.yaml?label=CI&logo=github)](https://github.com/llerandi/confluence2md/actions/workflows/ci.yaml)
+[![License](https://img.shields.io/github/license/llerandi/confluence2md)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.12%2B-blue?logo=python)](https://www.python.org/)
+[![Use this template](https://img.shields.io/badge/use%20this-template-2ea44f?logo=github)](https://github.com/new?template_name=confluence2md&template_owner=llerandi)
+
 Convert Confluence Data Center pages to Markdown with images, ready for GitHub Pages.
 
 Give it any page URL and it produces a `.md` file plus an `images/` folder with all referenced attachments, links rewritten to relative paths. No PDF or Word export involved: it uses the Confluence REST API, so the conversion is deterministic and faithful.
@@ -24,14 +29,14 @@ Requires Python 3.12 or newer. Create a virtual environment and install the depe
 # Windows (PowerShell)
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-pip install requests beautifulsoup4 markdownify
+pip install -r requirements.txt
 ```
 
 ```bash
 # Linux/Mac
 python3 -m venv .venv
 source .venv/bin/activate
-pip install requests beautifulsoup4 markdownify
+pip install -r requirements.txt
 ```
 
 ```powershell
@@ -65,3 +70,35 @@ python scripts/confluence2md.py "https://confluence.company.com/display/SPACE/My
 ## Known limitations
 
 Plugin macros (draw.io, Gliffy, Jira issues, etc.) have no Markdown equivalent. The script keeps their text content when available and prints a warning for the ones it skips. For draw.io diagrams, export them to PNG in Confluence so they travel as regular attachments.
+
+## Roadmap
+
+### Phase 1 - Core
+
+- [x] Page conversion via REST API: headings, tables, code blocks, panels, task lists, links
+- [x] Attachment download with references rewritten to relative paths
+- [x] Support all Data Center URL formats (pageId, /pages/, /display/, /spaces/)
+- [x] Internal CA support (`REQUESTS_CA_BUNDLE` or `-k`)
+
+### Phase 2 - Automation
+
+- [x] GitHub Actions workflow for self-hosted runners (manual dispatch, auto-commit)
+- [x] Template repository setup so each user configures their own PAT
+
+### Phase 3 - Quality
+
+- [x] Security hardening: path traversal, shell injection, request timeouts
+- [x] Pinned dependencies (requirements.txt)
+- [x] Unit tests for the conversion logic
+- [x] CI pipeline (lint + tests) on every push and pull request
+
+### Phase 4 - Next
+
+- [ ] Batch mode: convert a list of pages in one run
+- [ ] Convert a whole space preserving the page hierarchy as folders
+- [ ] Rewrite internal Confluence links as relative Markdown links between converted pages
+- [ ] Scheduled sync (cron) to keep GitHub Pages up to date automatically
+
+## License
+
+[MIT](LICENSE)
