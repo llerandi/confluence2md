@@ -1,4 +1,4 @@
-# confluence2md
+# Confluence to Markdown
 
 Convert Confluence Data Center pages to Markdown with images, ready for GitHub Pages.
 
