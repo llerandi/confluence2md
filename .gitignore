@@ -5,5 +5,7 @@
 .idea/
 .vscode/
 
-# Project directories
-docs/
+# Python
+.venv/
+__pycache__/
+*.pyc
