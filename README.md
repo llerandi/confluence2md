@@ -40,7 +40,7 @@ Output: `docs/my-page.md` plus `docs/images/`.
 If your Confluence uses an internal CA certificate and TLS verification fails, add `-k` (or better, point `REQUESTS_CA_BUNDLE` at the corporate certificate).
 
 ```bash
-python scripts/confluence2md.py "[https://confluence.company.com/display/SPACE/My+Page](https://confluence.company.com/display/SPACE/My+Page)" -o docs -k
+python scripts/confluence2md.py "https://confluence.company.com/display/SPACE/My+Page" -o docs -k
 ```
 
 ### 3. Automate with GitHub Actions (optional)
