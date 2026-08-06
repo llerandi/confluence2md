@@ -10,6 +10,7 @@ Accepted URL formats (or a numeric pageId directly):
     .../pages/viewpage.action?pageId=12345
     .../pages/12345/Page+Title
     .../display/SPACE/Page+Title
+    .../spaces/SPACE/pages/12345/Page+Title
 
 Output:
     <outdir>/<page-title-slug>.md
@@ -46,7 +47,8 @@ def slugify(text: str) -> str:
 
 def guess_base_url(url: str) -> str:
     """Infer the Confluence base URL (including context path such as /confluence)."""
-    for marker in ("/pages/", "/display/", "/spaces/"):
+    # Cambiado el orden para que busque /spaces/ antes que /pages/
+    for marker in ("/spaces/", "/pages/", "/display/"):
         if marker in url:
             return url.split(marker)[0]
     p = urlparse(url)
