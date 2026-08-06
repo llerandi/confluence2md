@@ -18,7 +18,7 @@ In Confluence: your avatar -> **Settings** -> **Personal Access Tokens** -> **Cr
 
 ### 2. Run locally (recommended first)
 
-Create a virtual environment and install the dependencies:
+Requires Python 3.12 or newer. Create a virtual environment and install the dependencies:
 
 ```powershell
 # Windows (PowerShell)

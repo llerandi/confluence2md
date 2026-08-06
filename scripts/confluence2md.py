@@ -241,6 +241,8 @@ def download_images(session: requests.Session, base: str, page_id: str,
 # ---------------------------------------------------------------- main
 
 def main():
+    if sys.version_info < (3, 12):
+        die("Python 3.12+ is required")
     ap = argparse.ArgumentParser(description="Confluence DC to Markdown")
     ap.add_argument("page", help="Page URL or numeric pageId")
     ap.add_argument("-o", "--outdir", default="docs", help="Output folder (default: docs)")
