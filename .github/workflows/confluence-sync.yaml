@@ -1,0 +1,49 @@
+# Requirements:
+#   - Self-hosted runner with network access to your Confluence instance
+#   - Secret CONFLUENCE_PAT (Settings -> Secrets and variables -> Actions)
+#   - Variable CONFLUENCE_BASE_URL (optional; inferred from the page URL if absent)
+
+name: Confluence to Markdown
+
+on:
+  workflow_dispatch:
+    inputs:
+      page_url:
+        description: "Confluence page URL (or pageId)"
+        required: true
+      output_dir:
+        description: "Target folder in the repo"
+        required: false
+        default: "docs"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: [self-hosted]   # required: GitHub-hosted runners cannot reach the internal network
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 markdownify
+
+      - name: Convert page
+        env:
+          CONFLUENCE_PAT: ${{ secrets.CONFLUENCE_PAT }}
+          CONFLUENCE_BASE_URL: ${{ vars.CONFLUENCE_BASE_URL }}
+        run: |
+          python scripts/confluence2md.py "${{ inputs.page_url }}" -o "${{ inputs.output_dir }}"
+
+      - name: Commit and push
+        run: |
+          git config user.name "confluence-sync[bot]"
+          git config user.email "actions@github.com"
+          git add "${{ inputs.output_dir }}"
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "docs: sync from Confluence (${{ inputs.page_url }})"
+          git push
