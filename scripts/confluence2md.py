@@ -82,7 +82,8 @@ def resolve_page_id(url_or_id: str, base: str, session: requests.Session) -> str
     if m:
         space, title = m.group(1), unquote(m.group(2).replace("+", " "))
         r = session.get(f"{base}/rest/api/content",
-                        params={"spaceKey": space, "title": title, "limit": 1})
+                        params={"spaceKey": space, "title": title, "limit": 1},
+                        timeout=30)
         r.raise_for_status()
         results = r.json().get("results", [])
         if not results:
@@ -93,7 +94,7 @@ def resolve_page_id(url_or_id: str, base: str, session: requests.Session) -> str
 
 def fetch_page(base: str, page_id: str, session: requests.Session) -> dict:
     r = session.get(f"{base}/rest/api/content/{page_id}",
-                    params={"expand": "body.storage,space"})
+                    params={"expand": "body.storage,space"}, timeout=30)
     if r.status_code == 401:
         die("401 Unauthorized: check your CONFLUENCE_PAT")
     if r.status_code == 404:
@@ -163,7 +164,8 @@ def storage_to_markdown(storage_html: str, title: str):
         ext = ac_img.find("ri:url")
         new = None
         if att and att.get("ri:filename"):
-            fn = att["ri:filename"]
+            # Path(...).name strips any directory component (path traversal safety)
+            fn = Path(att["ri:filename"]).name
             referenced.add(fn)
             new = soup.new_tag("img", src=f"{IMG_DIR_NAME}/{quote(fn)}",
                                alt=ac_img.get("ac:alt", fn))
@@ -219,7 +221,7 @@ def download_images(session: requests.Session, base: str, page_id: str,
     links, start = {}, 0
     while True:
         r = session.get(f"{base}/rest/api/content/{page_id}/child/attachment",
-                        params={"limit": 100, "start": start})
+                        params={"limit": 100, "start": start}, timeout=30)
         r.raise_for_status()
         data = r.json()
         for a in data.get("results", []):
@@ -230,11 +232,11 @@ def download_images(session: requests.Session, base: str, page_id: str,
 
     for fn in sorted(referenced):
         link = links.get(fn) or f"/download/attachments/{page_id}/{quote(fn)}"
-        r = session.get(base + link)
+        r = session.get(base + link, timeout=60)
         if r.status_code != 200:
             print(f"  WARNING: could not download {fn} (HTTP {r.status_code})")
             continue
-        (img_dir / fn).write_bytes(r.content)
+        (img_dir / Path(fn).name).write_bytes(r.content)
         print(f"  OK {IMG_DIR_NAME}/{fn}")
 
 

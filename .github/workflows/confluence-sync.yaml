@@ -36,14 +36,19 @@ jobs:
         env:
           CONFLUENCE_PAT: ${{ secrets.CONFLUENCE_PAT }}
           CONFLUENCE_BASE_URL: ${{ vars.CONFLUENCE_BASE_URL }}
+          PAGE_URL: ${{ inputs.page_url }}
+          OUTPUT_DIR: ${{ inputs.output_dir }}
         run: |
-          python scripts/confluence2md.py "${{ inputs.page_url }}" -o "${{ inputs.output_dir }}"
+          python scripts/confluence2md.py "$PAGE_URL" -o "$OUTPUT_DIR"
 
       - name: Commit and push
+        env:
+          PAGE_URL: ${{ inputs.page_url }}
+          OUTPUT_DIR: ${{ inputs.output_dir }}
         run: |
           git config user.name "confluence-sync[bot]"
           git config user.email "actions@github.com"
-          git add "${{ inputs.output_dir }}"
+          git add "$OUTPUT_DIR"
           git diff --cached --quiet && echo "No changes" && exit 0
-          git commit -m "docs: sync from Confluence (${{ inputs.page_url }})"
+          git commit -m "docs: sync from Confluence ($PAGE_URL)"
           git push
