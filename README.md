@@ -18,7 +18,19 @@ In Confluence: your avatar -> **Settings** -> **Personal Access Tokens** -> **Cr
 
 ### 2. Run locally (recommended first)
 
+Create a virtual environment and install the dependencies:
+
+```powershell
+# Windows (PowerShell)
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install requests beautifulsoup4 markdownify
+```
+
 ```bash
+# Linux/Mac
+python3 -m venv .venv
+source .venv/bin/activate
 pip install requests beautifulsoup4 markdownify
 ```
 
